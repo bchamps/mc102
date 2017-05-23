@@ -1,0 +1,25 @@
+A += b
+A += c
+A += d
+B += b
+B += b
+B += l
+B += v
+B += d
+B += w
+B += h
+A += a
+A = {}
+B = {a, h, f, l, c}
+A -= a
+A -= b
+B -= a
+B -= b
+B -= l
+B -= l
+B -= n
+B -= h
+B -= c
+B -= f
+B -= f
+Q

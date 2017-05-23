@@ -1,0 +1,12 @@
+A = {c, f, h}
+B = {c, d, e}
+A \ B
+B \ A
+-A
+-B
+A = {}
+A \ B
+B \ A
+-A
+-B
+Q

@@ -1,0 +1,8 @@
+A = {c, f, h}
+A -= f
+A -= c
+A -= f
+A
+h e A
+f e A
+Q

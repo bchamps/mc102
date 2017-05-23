@@ -1,0 +1,15 @@
+A = {}
+B = {}
+A u B
+B = {d, j, n, q}
+A u B
+B u A
+A = {c, m}
+A u B
+A = {c, m, d, n}
+A u B
+A = {d, j, n, q}
+A u B
+B = {d, j, n, q}
+A u B
+Q

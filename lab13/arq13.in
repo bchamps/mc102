@@ -1,0 +1,17 @@
+A = {}
+B = {}
+A \ B
+B = {d, j, n, q}
+A \ B
+B \ A
+A = {c, m}
+A \ B
+B \ A
+-A
+-B
+A = {c, m, d, n}
+A \ B
+B \ A
+A = {d, j, n, q}
+A \ B
+Q

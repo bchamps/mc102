@@ -1,0 +1,54 @@
+A = {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t}
+B = {b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u}
+A \ B
+B \ A
+A ^ B
+A c B
+B c A
+a e B
+b e B
+k e B
+u e B
+v e B
+B -= a
+B -= v
+B -= k
+B -= k
+B += k
+B -= b
+B -= b
+B += b
+B -= u
+B -= u
+B += u
+B -= u
+B -= u
+B = {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t}
+A u B
+A ^ B
+A \ B
+B \ A
+-A
+-B
+A c B
+B c A
+B = {}
+B \ A
+A \ B
+A u B
+B u A
+A ^ B
+B ^ A
+A c B
+B c A
+B = {u, v, w, x, y, z, a, b, c, d, e, f, g, h, i, j, k, l, m, n}
+B ^ A
+A \ B
+B \ A
+A c B
+B c A
+A = {k, l, m, n, o, p, q, r, s, t}
+B = {u, v, w, x, y, z, a, b, c, d}
+A ^ B
+A u B
+Q
