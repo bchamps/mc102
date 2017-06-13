@@ -20,10 +20,14 @@
 #include <string.h>
 #include <math.h>
 
-int  **allocmatriz(int largura, int altura); 
+int  **allocMatriz(int largura, int altura); 
 void readMatriz (int **matriz, int largura, int altura, FILE *arq); 
 void cinza(int **matriz, int largura, int altura);
 void printMatriz(int **matriz, int largura, int altura, FILE *arqout); 
+void deallocMatriz(int **matriz, int largura, int altura);
+int max(int **matriz, int largura, int altura, int ini);
+int min(int **matriz, int largura, int altura, int ini);
+void esticar(int **matriz, int largura, int altura);
 
 int main(int argc, char **argv) {
 	if (argc != 3) {
@@ -51,10 +55,13 @@ int main(int argc, char **argv) {
 
 	fscanf(arqin, "P3 %d %d 255", &largura, &altura);
 	
-	matriz = allocmatriz(largura, altura);
+	matriz = allocMatriz(largura, altura);
 	readMatriz(matriz, largura, altura, arqin);
-	if (strcmp(efeito, "cinza") == 0)
+	if(strcmp(efeito, "cinza") == 0)
 		cinza(matriz, largura, altura);
+	
+	if(strcmp(efeito, "esticar") == 0)
+		esticar(matriz, largura, altura);
 
 	printMatriz(matriz, largura, altura, arqout);
 	fclose(arqin);
@@ -80,7 +87,7 @@ int main(int argc, char **argv) {
 
   return 0;
 }
-int  **allocmatriz(int largura, int altura) {
+int  **allocMatriz(int largura, int altura) {
 	int i;
 	int **matriz = malloc(altura*sizeof(int*));
 
@@ -127,10 +134,73 @@ void printMatriz(int **matriz, int largura, int altura, FILE *arqout) {
 	fclose(arqout);	
 }
 
-/*int esticar() {
+void deallocMatriz(int **matriz, int largura, int altura) {
+	int i;
 
+	for(i=0; i<altura; i++) {
+		free(matriz[i]);
+	}
+	
+	free(matriz);
+}
+
+int max(int **matriz, int largura, int altura, int ini) {
+	int valmax=0, i, j;
+
+	for(i=0; i<altura; i++) {
+		for(j=ini; j<3*largura; j+=3) {
+			if(matriz[i][j] > valmax)
+				valmax = matriz[i][j];
+		}
+	}
+
+	return valmax;
+}
+
+int min(int **matriz, int largura, int altura, int ini) {
+	int valmin=255, i, j;
+
+	for(i=0; i<altura; i++) {
+		for(j=ini; j<3*largura; j+=3) {
+			if(matriz[i][j] < valmin)
+				valmin = matriz[i][j];
+		}
+	}
+
+	return valmin;
+}
+
+void esticar(int **matriz, int largura, int altura) {
+	int i, j, r, g, b, rmin, rmax, gmin, gmax, bmin, bmax;
+
+	rmin = min(matriz, largura, altura, 0);
+	rmax = max(matriz, largura, altura, 0);
+
+	gmin = min(matriz, largura, altura, 1);
+	gmax = max(matriz, largura, altura, 1);
+	
+	bmin = min(matriz, largura, altura, 2);
+	bmax = max(matriz, largura, altura, 2);
+
+	for(i=0, r=0,g=1,b=2; i<altura; r+=3, g+=3, b+=3) {
+		if(r>=3*largura) {
+			r=0, g=1, b=2;
+			i++;
+		}
+		if(i==altura){
+			break;
+		}
+		if(rmin != rmax)
+		matriz[i][r] = floor((matriz[i][r] - rmin)*255/(rmax - rmin));
+
+		if(gmin != gmax)
+		matriz[i][g] = floor((matriz[i][g] - gmin)*255/(gmax - gmin));
+
+		if(bmin != bmax)
+		matriz[i][b] = floor((matriz[i][b] - bmin)*255/(bmax - bmin));
+	}	
 }
 
 int normalizar(){
 
-}*/
+}
