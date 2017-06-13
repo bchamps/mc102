@@ -28,7 +28,8 @@ void deallocMatriz(int **matriz, int largura, int altura);
 int max(int **matriz, int largura, int altura, int ini);
 int min(int **matriz, int largura, int altura, int ini);
 void esticar(int **matriz, int largura, int altura);
-
+void normalizar(int **matriz, int largura, int altura);
+ 
 int main(int argc, char **argv) {
 	if (argc != 3) {
 		fprintf(stderr, "Argumentos invalidos. Use:\n");
@@ -53,53 +54,39 @@ int main(int argc, char **argv) {
 	arqin = fopen(arqEntrada, "r");
 	arqout = fopen(arqSaida, "w");
 
-	fscanf(arqin, "P3 %d %d 255", &largura, &altura);
-	
+	fscanf(arqin, "P3 %d %d 255", &largura, &altura); //leitura do inicio
+
 	matriz = allocMatriz(largura, altura);
 	readMatriz(matriz, largura, altura, arqin);
-	if(strcmp(efeito, "cinza") == 0)
+
+	if(strcmp(efeito, "cinza") == 0) //comparacao para aplicar efeitos
 		cinza(matriz, largura, altura);
 	
 	if(strcmp(efeito, "esticar") == 0)
 		esticar(matriz, largura, altura);
+	
+	if(strcmp(efeito, "normalizar") == 0)
+		normalizar(matriz, largura, altura);
 
 	printMatriz(matriz, largura, altura, arqout);
 	fclose(arqin);
 	
-/* Escala Cinza:
- * novaR[X][Y] = ⌊(imagemR[X][Y] + imagemG[X][Y] + imagemB[X][Y]) / 3⌋
- * novaG[X][Y] = novaR[X][Y]
- * novaB[X][Y] = novaR[X][Y]
- */
-
-/* Normalizar: 
- * novaR[X][Y] = ⌊imagemR[X][Y] * 255 / (imagemR[X][Y] + imagemG[X][Y] + imagemB[X][Y])⌋
- * novaG[X][Y] = ⌊imagemG[X][Y] * 255 / (imagemR[X][Y] + imagemG[X][Y] + imagemB[X][Y])⌋
- * novaB[X][Y] = ⌊imagemB[X][Y] * 255 / (imagemR[X][Y] + imagemG[X][Y] + imagemB[X][Y])⌋
- */
-
-/* Esticar
- * novaR[X][Y] = ⌊((imagemR[X][Y] - Rmin) * 255)/(Rmax - Rmin)⌋
- * novaG[X][Y] = ⌊((imagemG[X][Y] - Gmin) * 255)/(Gmax - Gmin)⌋
- * novaB[X][Y] = ⌊((imagemB[X][Y] - Bmin) * 255)/(Bmax - Bmin)⌋
- */
-
-
   return 0;
 }
-int  **allocMatriz(int largura, int altura) {
+
+int  **allocMatriz(int largura, int altura) { //alocacao da matriz
 	int i;
-	int **matriz = malloc(altura*sizeof(int*));
+	int **matriz = malloc(altura*sizeof(int*)); //alocacao do vetor de ponteiros
 
 	for(i=0; i<altura; i++) {
-		matriz[i] = malloc(3*largura*sizeof(int));
+		matriz[i] = malloc(3*largura*sizeof(int)); //alocacao de cada indice do ponteiro
 	}
 	return matriz; 
 }
 
-void readMatriz(int **matriz, int largura, int altura, FILE *arq) {
+void readMatriz(int **matriz, int largura, int altura, FILE *arq) { //leitura da matriz
 	int i, j;
-	for(i=0;i<altura;i++) {
+	for(i=0;i<altura;i++) { //posicao a posicao
 		for(j=0;j<3*largura; j++){
 			fscanf (arq,"%d", &matriz[i][j]);
 		}
@@ -107,26 +94,26 @@ void readMatriz(int **matriz, int largura, int altura, FILE *arq) {
 		
 }
  
-void cinza(int **matriz, int largura, int altura) {
-	int i, j, r, g, b;
+void cinza(int **matriz, int largura, int altura) { //aplicacao do efeito cinza
+	int i, r, g, b;
 	for(i=0, r=0,g=1,b=2; i<altura; r+=3, g+=3, b+=3) {
 		if(r>=3*largura) {
 			r=0, g=1, b=2;
 			i++;
 		}
-		if(i==altura){
+		if(i==altura) {
 			break;
 		}	
-		matriz[i][r] = floor((matriz[i][r] + matriz[i][g] + matriz[i][b])/3);
-		matriz[i][g] = matriz[i][r];
-		matriz[i][b] = matriz[i][r];
+		matriz[i][r] = floor((matriz[i][r] + matriz[i][g] + matriz[i][b])/3); //fazemos a soma na posicao r. floor para arredondamento
+		matriz[i][g] = matriz[i][r]; //..g
+		matriz[i][b] = matriz[i][r];//..b. Passamos todos os parametros para matriz final
 	}
 }
 
 void printMatriz(int **matriz, int largura, int altura, FILE *arqout) {
 	fprintf(arqout, "P3\n%d %d\n255\n", largura, altura);
 	for(int i=0; i<altura; i++) {
-		for(int j=0; j<3*largura; j++) {
+		for(int j=0; j<3*largura; j++) { //print da matriz
 			fprintf(arqout, "%d ", matriz[i][j]);
 		}
 		fprintf(arqout, "\n");
@@ -137,7 +124,7 @@ void printMatriz(int **matriz, int largura, int altura, FILE *arqout) {
 void deallocMatriz(int **matriz, int largura, int altura) {
 	int i;
 
-	for(i=0; i<altura; i++) {
+	for(i=0; i<altura; i++) { //desalocar matriz
 		free(matriz[i]);
 	}
 	
@@ -145,7 +132,7 @@ void deallocMatriz(int **matriz, int largura, int altura) {
 }
 
 int max(int **matriz, int largura, int altura, int ini) {
-	int valmax=0, i, j;
+	int valmax=0, i, j; //valor de maximo para funcao esticar
 
 	for(i=0; i<altura; i++) {
 		for(j=ini; j<3*largura; j+=3) {
@@ -158,7 +145,7 @@ int max(int **matriz, int largura, int altura, int ini) {
 }
 
 int min(int **matriz, int largura, int altura, int ini) {
-	int valmin=255, i, j;
+	int valmin=255, i, j; //valor de minimo para funcao esticar
 
 	for(i=0; i<altura; i++) {
 		for(j=ini; j<3*largura; j+=3) {
@@ -170,11 +157,11 @@ int min(int **matriz, int largura, int altura, int ini) {
 	return valmin;
 }
 
-void esticar(int **matriz, int largura, int altura) {
-	int i, j, r, g, b, rmin, rmax, gmin, gmax, bmin, bmax;
+void esticar(int **matriz, int largura, int altura) { //efeito esticar contraste
+	int i, r, g, b, rmin, rmax, gmin, gmax, bmin, bmax;
 
-	rmin = min(matriz, largura, altura, 0);
-	rmax = max(matriz, largura, altura, 0);
+	rmin = min(matriz, largura, altura, 0); //usamos as funcoes feitas anteriormente
+	rmax = max(matriz, largura, altura, 0); //para encontrar os valores de max e min
 
 	gmin = min(matriz, largura, altura, 1);
 	gmax = max(matriz, largura, altura, 1);
@@ -190,7 +177,7 @@ void esticar(int **matriz, int largura, int altura) {
 		if(i==altura){
 			break;
 		}
-		if(rmin != rmax)
+		if(rmin != rmax) //condicao para nao haver divisao por zero
 		matriz[i][r] = floor((matriz[i][r] - rmin)*255/(rmax - rmin));
 
 		if(gmin != gmax)
@@ -201,6 +188,24 @@ void esticar(int **matriz, int largura, int altura) {
 	}	
 }
 
-int normalizar(){
+void normalizar(int **matriz, int largura, int altura) { //efeito normalizar
+	int i, r, g, b, soma;
 
+	for(i=0, r=0,g=1,b=2; i<altura; r+=3, g+=3, b+=3) {
+		if(r>=3*largura) {
+			r=0, g=1, b=2;
+			i++;
+		}
+		if(i==altura){
+			break;
+		}
+
+		soma = matriz[i][r] + matriz[i][g] + matriz[i][b];
+
+		if(soma != 0) { //condicao para nao haver divisao por zero
+		matriz[i][r] = floor(matriz[i][r]*255/soma);
+		matriz[i][g] = floor(matriz[i][g]*255/soma);
+		matriz[i][b] = floor(matriz[i][b]*255/soma);	
+		}
+	}
 }
